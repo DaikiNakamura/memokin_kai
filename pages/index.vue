@@ -12,6 +12,11 @@
 <script>
 
 export default {
+  fetch ({ store, redirect }) {
+    if (!store.state.authUser) {
+      return redirect('/login')
+    }
+  }
 }
 </script>
 

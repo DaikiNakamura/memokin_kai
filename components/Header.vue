@@ -11,6 +11,10 @@
         <el-menu-item index="setting" class="header__menu appFont">セッテイ</el-menu-item>
       </el-menu>
     </div>
+    <div class="header__user" v-if="username">
+      <p>ユーザ名：{{ username }}</p>
+      <el-button type="primary" icon="el-icon-setting" size="mini" @click="logout">Logout</el-button>
+    </div>
   </div>
 </template>
 
@@ -22,6 +26,20 @@
       return {
         activeIndex: '/'
       };
+    },
+    computed: {
+      username() {
+        if(this.$store.state.authUser) {
+          return this.$store.state.authUser.username;
+        }
+        return null
+      }
+    },
+    methods: {
+      logout() {
+        this.$store.dispatch('logout')
+          .then(() => this.$router.replace({ path: 'login' }));
+      }
     }
   }
 </script>
@@ -56,5 +74,9 @@
   }
   .el-menu-item.is-active {
     border-bottom: 2px solid #008E49;
+  }
+
+  .header__user {
+    margin-left: 100px;
   }
 </style>

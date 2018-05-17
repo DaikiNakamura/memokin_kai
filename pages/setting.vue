@@ -40,6 +40,11 @@
 <script>
   export default {
     name: "setting",
+    fetch ({ store, redirect }) {
+      if (!store.state.authUser) {
+        return redirect('/login')
+      }
+    },
     data() {
       return {
         form: {
