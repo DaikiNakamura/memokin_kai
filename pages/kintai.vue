@@ -5,27 +5,31 @@
       <div class="body">
         <el-form ref="form" :model="form" label-width="90px" size="mini">
           <el-form-item label="ヒヅケ">
-            <el-date-picker type="date" placeholder="Pick a date" v-model="form.date1" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date" placeholder="Pick a date" v-model="form.date"
+                            :clearable="false" :editable="false" style="width: 100%;"></el-date-picker>
           </el-form-item>
           <el-form-item label="ジカン">
             <el-row>
               <el-col :span="7">
                 <el-time-select placeholder="Pick a time" v-model="form.startTime"
-                                :picker-options="{start: '00:00', step: '00:15', end: '23:45'}" style="width: 100%;"></el-time-select>
+                                :picker-options="{start: '00:00', step: '00:15', end: '23:45'}"
+                                :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
               </el-col>
               <el-col :span="1" class="separate">
                 <span>～</span>
               </el-col>
               <el-col :span="7">
                 <el-time-select placeholder="Pick a time" v-model="form.endTime"
-                                :picker-options="{start: '00:00', step: '00:15', end: '23:45'}" style="width: 100%;"></el-time-select>
+                                :picker-options="{start: '00:00', step: '00:15', end: '23:45'}"
+                                :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
               </el-col>
               <el-col :span="2" class="separate2">
                 <span>&nbsp;</span>
               </el-col>
               <el-col :span="7">
                 <el-time-select placeholder="Pick a time" v-model="form.breakTime"
-                                :picker-options="{start: '00:00', step: '00:15', end: '03:00'}" style="width: 100%;"></el-time-select>
+                                :picker-options="{start: '00:00', step: '00:15', end: '03:00'}"
+                                :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
               </el-col>
             </el-row>
           </el-form-item>
@@ -33,7 +37,7 @@
             <el-input v-model="form.memo"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-check">ADD</el-button>
+            <el-button type="primary" icon="el-icon-check" @click="addWorkTime">ADD</el-button>
             <el-button type="warning" icon="el-icon-star-off">HOLIDAY</el-button>
           </el-form-item>
         </el-form>
@@ -46,31 +50,33 @@
           :data="kintaiData"
           border
           :header-cell-style="table_header_style"
+          :default-sort="{prop: 'date', order: 'ascending'}"
           style="width: 100%">
           <el-table-column
             prop="date"
             label="ヒヅケ"
-            width="100">
+            :formatter="dateFormatter"
+            width="120">
           </el-table-column>
           <el-table-column
             prop="startTime"
             label="カイシ"
-            width="100">
+            width="90">
           </el-table-column>
           <el-table-column
             prop="endTime"
             label="オワリ"
-            width="100">
+            width="90">
           </el-table-column>
           <el-table-column
             prop="breakTime"
             label="キュウケイ"
-            width="100">
+            width="90">
           </el-table-column>
           <el-table-column
             prop="memo"
             label="メモ"
-            width="359">
+            width="369">
           </el-table-column>
         </el-table>
         <br/>
@@ -86,6 +92,7 @@
 </template>
 
 <script>
+  const Moment = require('moment');
   export default {
     name: "kintai",
     fetch({store, redirect}) {
@@ -102,7 +109,7 @@
           breakTime: '',
           memo: ''
         },
-        kintaiData: [],
+        // kintaiData: [],
         table_header_style: {
           'background-color': '#1C8C42',
           color: '#000',
@@ -111,8 +118,27 @@
         }
       };
     },
+    computed: {
+      kintaiData() {
+        return this.$store.state.kintaiData;
+      }
+    },
+    watch: {
+      'form.date': {
+        handler(newDate, oldDate) {
+          let newYyyyMm = new Moment(newDate).format('YYYYMM');
+          let oldYyyyMm = new Moment(oldDate).format('YYYYMM');
+          if (newYyyyMm !== oldYyyyMm) {
+            this.getData(newYyyyMm);
+          }
+        }
+      }
+    },
     mounted() {
+      let today = new Moment();
+      this.form.date = today.toDate();
       this.formClear();
+      this.getData(today.format('YYYYMM'));
     },
     methods: {
       async formClear() {
@@ -121,6 +147,23 @@
         this.form.startTime = userSetting.startTime ? userSetting.startTime : '09:00';
         this.form.endTime = userSetting.endTime ? userSetting.endTime : '17:30';
         this.form.breakTime = userSetting.breakTime ? userSetting.breakTime : '01:00';
+      },
+      async getData(yyyyMm) {
+        await this.$store.dispatch('get_kintai', {
+          yyyyMm: yyyyMm
+        });
+      },
+      async addWorkTime() {
+        await this.$store.dispatch('add_kintai', {
+          date: this.form.date,
+          startTime: this.form.startTime,
+          endTime: this.form.endTime,
+          breakTime: this.form.breakTime,
+          memo: this.form.memo
+        });
+      },
+      dateFormatter(row, column) {
+        return new Moment(row.date, 'YYYYMMDD').format('YYYY-MM-DD');
       }
     }
   }

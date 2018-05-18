@@ -23,15 +23,18 @@
           <h3>- ジカン -</h3>
           <el-form-item label="カイシ">
             <el-time-select placeholder="Pick a time" v-model="form.startTime"
-                            :picker-options="{start: '00:00', step: '00:15', end: '23:45'}" style="width: 100%;"></el-time-select>
+                            :picker-options="{start: '00:00', step: '00:15', end: '23:45'}"
+                            :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
           </el-form-item>
           <el-form-item label="シュウリョウ">
             <el-time-select placeholder="Pick a time" v-model="form.endTime"
-                            :picker-options="{start: '00:00', step: '00:15', end: '23:45'}" style="width: 100%;"></el-time-select>
+                            :picker-options="{start: '00:00', step: '00:15', end: '23:45'}"
+                            :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
           </el-form-item>
           <el-form-item label="キュウケイ">
             <el-time-select placeholder="Pick a time" v-model="form.breakTime"
-                            :picker-options="{start: '00:00', step: '00:15', end: '03:45'}" style="width: 100%;"></el-time-select>
+                            :picker-options="{start: '00:00', step: '00:15', end: '03:45'}"
+                            :clearable="false" :editable="false" style="width: 100%;"></el-time-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-setting" @click="save">Save</el-button>
