@@ -28,7 +28,7 @@
                             :picker-options="{start: '00:00', step: '00:15', end: '03:45'}" style="width: 100%;"></el-time-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-setting">Save</el-button>
+            <el-button type="primary" icon="el-icon-setting" @click="save">Save</el-button>
             <el-button type="danger" icon="el-icon-delete">DELETE (ALL DATA)</el-button>
           </el-form-item>
         </el-form>
@@ -55,6 +55,32 @@
           endTime: '',
           breakTime: ''
         }
+      }
+    },
+    async mounted() {
+      await this.$store.dispatch('get_setting');
+      this.loadSetting();
+    },
+    methods: {
+      async save() {
+        await this.$store.dispatch('save_setting', {
+          name: this.form.name,
+          department: this.form.department,
+          place: this.form.place,
+          startTime: this.form.startTime,
+          endTime: this.form.endTime,
+          breakTime: this.form.breakTime
+        });
+        this.loadSetting();
+      },
+      loadSetting() {
+        let userSetting = this.$store.state.userSetting;
+        this.form.name = userSetting.name;
+        this.form.department = userSetting.department;
+        this.form.place = userSetting.place;
+        this.form.startTime = userSetting.startTime;
+        this.form.endTime = userSetting.endTime;
+        this.form.breakTime = userSetting.breakTime;
       }
     }
   }

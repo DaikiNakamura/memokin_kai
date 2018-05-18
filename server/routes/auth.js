@@ -7,10 +7,6 @@ let users = {};
 router.post('/register', function (req, res) {
   let userName = req.body.username;
   let userPass = req.body.password;
-  console.log('register');
-  console.log(users);
-  console.log(userName);
-  console.log(userPass);
 
   if(users[userName]) {
     res.status(409).json({ error: 'Conflict' });
@@ -26,10 +22,6 @@ router.post('/register', function (req, res) {
 router.post('/login', function (req, res) {
   let userName = req.body.username;
   let userPass = req.body.password;
-  console.log('login');
-  console.log(users);
-  console.log(userName);
-  console.log(userPass);
 
   if(!users[userName] || users[userName].password !== userPass) {
     res.status(401).json({ error: 'Bad credentials' });
@@ -40,7 +32,6 @@ router.post('/login', function (req, res) {
 });
 
 router.post('/logout', function (req, res) {
-  console.log(users);
   delete req.session.authUser;
   res.json({ ok: true });
 });

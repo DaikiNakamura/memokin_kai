@@ -4,6 +4,7 @@ const session = require('express-session');
 const app = require('express')();
 
 const auth = require('./server/routes/auth');
+const setting = require('./server/routes/setting');
 
 // req.body へアクセスするために body-parser を使う
 app.use(bodyParser.json());
@@ -13,11 +14,12 @@ app.use(session({
   secret: 'super-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60000 }
+  cookie: { maxAge: 6000000 }
 }));
 
 // 認証系
 app.use('/auth', auth);
+app.use('/setting', setting);
 
 // Nuxt.jsをインスタンス化
 let config = require('./nuxt.config.js')

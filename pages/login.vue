@@ -49,7 +49,7 @@
             this.$router.replace({ path: '/' });
           }
         } catch (e) {
-            this.errorMessage = '認証に失敗しました。'
+            this.errorMessage = e.message;
         }
       }
     }

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 const crypto = require("crypto");
 
 Vue.use(Vuex)
@@ -10,29 +11,39 @@ require('whatwg-fetch')
 const store = () => new Vuex.Store({
 
   state: {
-    authUser: null
+    authUser: null,
+    userSetting: {
+      name: '',
+      department: '',
+      place: '',
+      startTime: '',
+      endTime: '',
+      breakTime: ''
+    }
   },
 
   mutations: {
     SET_USER: function (state, user) {
-      state.authUser = user
+      state.authUser = user;
+    },
+    SET_USER_SETTING: function (state, setting) {
+      state.userSetting = setting;
     }
   },
 
   actions: {
     // initialize
-    nuxtServerInit ({ commit }, { req }) {
+    nuxtServerInit({commit}, {req}) {
       if (req.session && req.session.authUser) {
-        commit('SET_USER', req.session.authUser)
+        commit('SET_USER', req.session.authUser);
       }
     },
 
     // ---  auth Actions --->
-    async register({commit}, { username, password}) {
+    async register({commit}, {username, password}) {
       const sha512 = crypto.createHash('sha512');
       sha512.update(password);
       let pass = sha512.digest('hex');
-      console.log(pass);
       let res = await fetch('/auth/register', {
         credentials: 'same-origin',
         method: 'POST',
@@ -50,11 +61,10 @@ const store = () => new Vuex.Store({
       }
       return username;
     },
-    async login ({ commit }, { username, password }) {
+    async login({commit}, {username, password}) {
       const sha512 = crypto.createHash('sha512');
       sha512.update(password);
       let pass = sha512.digest('hex');
-      console.log(pass);
       let res = await fetch('/auth/login', {
         credentials: 'same-origin',
         method: 'POST',
@@ -68,22 +78,58 @@ const store = () => new Vuex.Store({
       });
 
       if (res.status === 401) {
-        throw new Error('Bad credentials')
+        throw new Error('ユーザー認証に失敗しました。');
       }
 
       let authUser = await res.json();
       commit('SET_USER', authUser);
       return authUser;
     },
-    async logout ({ commit }) {
+    async logout({commit}) {
       await fetch('/auth/logout', {
         credentials: 'same-origin',
         method: 'POST'
       });
 
       commit('SET_USER', null);
+    },
+
+    // ---  setting Actions --->
+    async get_setting({commit}) {
+      let res = await fetch('/setting/', {
+        credentials: 'same-origin',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      let setting = await res.json();
+      commit('SET_USER_SETTING', setting);
+      return setting;
+    },
+    async save_setting({commit}, {name, department, place, startTime, endTime, breakTime}) {
+      let res = await fetch('/setting/save', {
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          department,
+          place,
+          startTime,
+          endTime,
+          breakTime
+        })
+      });
+
+      let setting = await res.json();
+      commit('SET_USER_SETTING', setting);
+      return setting;
     }
   }
-})
+});
 
 export default store
