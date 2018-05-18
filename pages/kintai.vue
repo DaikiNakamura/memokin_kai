@@ -93,6 +93,7 @@
 
 <script>
   const Moment = require('moment');
+  Moment.locale('ja');
   export default {
     name: "kintai",
     fetch({store, redirect}) {
@@ -155,7 +156,7 @@
       },
       async addWorkTime() {
         await this.$store.dispatch('add_kintai', {
-          date: this.form.date,
+          date: new Moment(this.form.date).format('YYYYMMDD'),
           startTime: this.form.startTime,
           endTime: this.form.endTime,
           breakTime: this.form.breakTime,

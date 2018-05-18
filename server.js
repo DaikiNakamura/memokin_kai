@@ -5,6 +5,7 @@ const app = require('express')();
 
 const auth = require('./server/routes/auth');
 const setting = require('./server/routes/setting');
+const kintai = require('./server/routes/kintai');
 
 // req.body へアクセスするために body-parser を使う
 app.use(bodyParser.json());
@@ -20,6 +21,7 @@ app.use(session({
 // 認証系
 app.use('/api/auth', auth);
 app.use('/api/setting', setting);
+app.use('/api/kintai', kintai);
 
 // Nuxt.jsをインスタンス化
 let config = require('./nuxt.config.js')

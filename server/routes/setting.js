@@ -16,11 +16,10 @@ router.get('/', function (req, res) {
 });
 
 router.post('/save', function (req, res) {
-
-  let username = req.session.authUser.username;
-  if(!username) {
-    res.status(401).json({ error: 'Bad credentials' });
+  if(!req.session.authUser) {
+    return res.status(401).json({ error: 'Bad credentials' });
   }
+  let username = req.session.authUser.username;
 
   let setting = {
     name: req.body.name,

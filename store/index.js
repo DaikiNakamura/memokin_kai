@@ -147,42 +147,45 @@ const store = () => new Vuex.Store({
 
     // ---  kintai Actions --->
     async get_kintai({commit}, {yyyyMm}) {
-      commit('SET_KINTAI', [
-        {
-          date: '20180501',
-          startTime: '10:00',
-          endTime: '19:00',
-          breakTime: '01:00',
-          memo: 'testData'
-        },{
-          date: '20180502',
-          startTime: '10:00',
-          endTime: '19:00',
-          breakTime: '01:00',
-          memo: 'testData'
-        },{
-          date: '20180503',
-          startTime: '10:00',
-          endTime: '19:00',
-          breakTime: '01:00',
-          memo: 'testData'
-        },{
-          date: '20180504',
-          startTime: '10:00',
-          endTime: '19:00',
-          breakTime: '01:00',
-          memo: 'testData'
+      let res = await fetch('/api/kintai/' + yyyyMm, {
+        credentials: 'same-origin',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
-      ]);
+      });
+
+      if (res.status === 401) {
+        throw new Error('ログインしてください。');
+      }
+
+      let resData = await res.json();
+      commit('SET_KINTAI', resData.data);
+      return resData.data;
     },
     async add_kintai({commit}, {date, startTime, endTime, breakTime, memo}) {
-      commit('ADD_KINTAI', {
-        date,
-        startTime,
-        endTime,
-        breakTime,
-        memo
+      let res = await fetch('/api/kintai/add', {
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          date,
+          startTime,
+          endTime,
+          breakTime,
+          memo
+        })
       });
+
+      if (res.status === 401) {
+        throw new Error('ログインしてください。');
+      }
+
+      let resData = await res.json();
+      commit('SET_KINTAI', resData.data);
+      return resData.data;
     }
   }
 });
