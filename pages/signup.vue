@@ -1,10 +1,10 @@
 <template>
   <section class="container">
     <div class="content login">
-      <h2>ログイン</h2>
+      <h2>ユーザ登録</h2>
       <div class="body">
-        <el-alert type="info" title="Info">
-          利用するにはログインが必要です。
+        <el-alert type="success" title="Registered" v-if="successMessage">
+          {{ successMessage }}
         </el-alert>
         <el-alert type="error" title="Error" v-if="errorMessage">
           {{ errorMessage }}
@@ -17,8 +17,7 @@
             <el-input v-model="form.password"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-check" @click="login">Login</el-button>
-            <nuxt-link to="/signup"><el-button type="warning" icon="el-icon-upload2">Sign Up</el-button></nuxt-link>
+            <el-button type="primary" icon="el-icon-plus" @click="register">Register</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -28,28 +27,27 @@
 
 <script>
   export default {
-    name: "login",
+    name: "signup",
     data() {
       return {
         form: {
           username: '',
           password: ''
         },
+        successMessage: '',
         errorMessage: ''
       };
     },
     methods: {
-      async login() {
+      async register() {
         try {
-          let authUser = await this.$store.dispatch('login', {
+          let username = await this.$store.dispatch('register', {
             username: this.form.username,
             password: this.form.password
           });
-          if(authUser) {
-            this.$router.replace({ path: '/' });
-          }
+          this.successMessage = username + 'さんの登録が完了しました（仮）:';
         } catch (e) {
-            this.errorMessage = '認証に失敗しました。'
+          this.errorMessage = e.message;
         }
       }
     }
@@ -66,12 +64,7 @@
     display: inline-block;
     width: 50px;
     height: 50px;
-    background-image: url("/img/setting.png");
+    background-image: url("/img/signup.png");
     background-size: contain;
   }
-
-  .login button {
-    margin-right: 10px;
-  }
-
 </style>

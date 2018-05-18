@@ -7,6 +7,5 @@
       <option name="REPORT_NULLS_PASSED_TO_NOT_NULL_PARAMETER" value="false" />
     </inspection_tool>
     <inspection_tool class="Eslint" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="JSHint" enabled="true" level="ERROR" enabled_by_default="true" />
   </profile>
 </component>

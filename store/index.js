@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+const crypto = require("crypto");
 
 Vue.use(Vuex)
 
@@ -19,14 +20,20 @@ const store = () => new Vuex.Store({
   },
 
   actions: {
+    // initialize
     nuxtServerInit ({ commit }, { req }) {
       if (req.session && req.session.authUser) {
         commit('SET_USER', req.session.authUser)
       }
     },
-    async login ({ commit }, { username, password }) {
-      return fetch('/api/login', {
-        // クライアントのクッキーをサーバーに送信
+
+    // ---  auth Actions --->
+    async register({commit}, { username, password}) {
+      const sha512 = crypto.createHash('sha512');
+      sha512.update(password);
+      let pass = sha512.digest('hex');
+      console.log(pass);
+      let res = await fetch('/auth/register', {
         credentials: 'same-origin',
         method: 'POST',
         headers: {
@@ -34,29 +41,47 @@ const store = () => new Vuex.Store({
         },
         body: JSON.stringify({
           username,
-          password
+          password: pass
         })
-      })
-        .then((res) => {
-          if (res.status === 401) {
-            throw new Error('Bad credentials')
-          } else {
-            return res.json()
-          }
+      });
+
+      if (res.status === 409) {
+        throw new Error('既に登録済みのユーザーです。');
+      }
+      return username;
+    },
+    async login ({ commit }, { username, password }) {
+      const sha512 = crypto.createHash('sha512');
+      sha512.update(password);
+      let pass = sha512.digest('hex');
+      console.log(pass);
+      let res = await fetch('/auth/login', {
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username,
+          password: pass
         })
-        .then((authUser) => {
-          commit('SET_USER', authUser)
-        })
+      });
+
+      if (res.status === 401) {
+        throw new Error('Bad credentials')
+      }
+
+      let authUser = await res.json();
+      commit('SET_USER', authUser);
+      return authUser;
     },
     async logout ({ commit }) {
-      return fetch('/api/logout', {
-        // クライアントのクッキーをサーバーに送信
+      await fetch('/auth/logout', {
         credentials: 'same-origin',
         method: 'POST'
-      })
-        .then(() => {
-          commit('SET_USER', null)
-        })
+      });
+
+      commit('SET_USER', null);
     }
   }
 })
