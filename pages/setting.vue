@@ -3,6 +3,12 @@
     <div class="content setting">
       <h2>セッテイ</h2>
       <div class="body">
+        <el-alert type="success" title="Registered" v-if="successMessage">
+          {{ successMessage }}
+        </el-alert>
+        <el-alert type="error" title="Error" v-if="errorMessage">
+          {{ errorMessage }}
+        </el-alert>
         <el-form ref="form" :model="form" label-width="90px" size="mini">
           <h3>- キホン -</h3>
           <el-form-item label="ナマエ">
@@ -54,7 +60,9 @@
           startTime: '',
           endTime: '',
           breakTime: ''
-        }
+        },
+        successMessage: '',
+        errorMessage: ''
       }
     },
     async mounted() {
@@ -63,15 +71,20 @@
     },
     methods: {
       async save() {
-        await this.$store.dispatch('save_setting', {
-          name: this.form.name,
-          department: this.form.department,
-          place: this.form.place,
-          startTime: this.form.startTime,
-          endTime: this.form.endTime,
-          breakTime: this.form.breakTime
-        });
-        this.loadSetting();
+        try {
+          await this.$store.dispatch('save_setting', {
+            name: this.form.name,
+            department: this.form.department,
+            place: this.form.place,
+            startTime: this.form.startTime,
+            endTime: this.form.endTime,
+            breakTime: this.form.breakTime
+          });
+          this.successMessage = '保存しました。';
+          this.loadSetting();
+        } catch (e) {
+          this.errorMessage = e.message;
+        }
       },
       loadSetting() {
         let userSetting = this.$store.state.userSetting;

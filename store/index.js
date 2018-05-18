@@ -44,7 +44,7 @@ const store = () => new Vuex.Store({
       const sha512 = crypto.createHash('sha512');
       sha512.update(password);
       let pass = sha512.digest('hex');
-      let res = await fetch('/auth/register', {
+      let res = await fetch('/api/auth/register', {
         credentials: 'same-origin',
         method: 'POST',
         headers: {
@@ -65,7 +65,7 @@ const store = () => new Vuex.Store({
       const sha512 = crypto.createHash('sha512');
       sha512.update(password);
       let pass = sha512.digest('hex');
-      let res = await fetch('/auth/login', {
+      let res = await fetch('/api/auth/login', {
         credentials: 'same-origin',
         method: 'POST',
         headers: {
@@ -86,7 +86,7 @@ const store = () => new Vuex.Store({
       return authUser;
     },
     async logout({commit}) {
-      await fetch('/auth/logout', {
+      await fetch('/api/auth/logout', {
         credentials: 'same-origin',
         method: 'POST'
       });
@@ -96,7 +96,7 @@ const store = () => new Vuex.Store({
 
     // ---  setting Actions --->
     async get_setting({commit}) {
-      let res = await fetch('/setting/', {
+      let res = await fetch('/api/setting/', {
         credentials: 'same-origin',
         method: 'GET',
         headers: {
@@ -104,12 +104,16 @@ const store = () => new Vuex.Store({
         }
       });
 
+      if (res.status === 401) {
+        throw new Error('ログインしてください。');
+      }
+
       let setting = await res.json();
       commit('SET_USER_SETTING', setting);
       return setting;
     },
     async save_setting({commit}, {name, department, place, startTime, endTime, breakTime}) {
-      let res = await fetch('/setting/save', {
+      let res = await fetch('/api/setting/save', {
         credentials: 'same-origin',
         method: 'POST',
         headers: {
@@ -124,6 +128,10 @@ const store = () => new Vuex.Store({
           breakTime
         })
       });
+
+      if (res.status === 401) {
+        throw new Error('ログインしてください。');
+      }
 
       let setting = await res.json();
       commit('SET_USER_SETTING', setting);

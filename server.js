@@ -18,8 +18,8 @@ app.use(session({
 }));
 
 // 認証系
-app.use('/auth', auth);
-app.use('/setting', setting);
+app.use('/api/auth', auth);
+app.use('/api/setting', setting);
 
 // Nuxt.jsをインスタンス化
 let config = require('./nuxt.config.js')
