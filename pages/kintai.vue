@@ -73,7 +73,7 @@
             width="359">
           </el-table-column>
         </el-table>
-        <br />
+        <br/>
         <el-form ref="form" :model="form" label-width="0px" size="mini">
           <el-form-item>
             <el-button type="primary" icon="el-icon-message">SHIP!!!</el-button>
@@ -88,7 +88,7 @@
 <script>
   export default {
     name: "kintai",
-    fetch ({ store, redirect }) {
+    fetch({store, redirect}) {
       if (!store.state.authUser) {
         return redirect('/login')
       }
@@ -97,9 +97,9 @@
       return {
         form: {
           date: '',
-          startTime: '10:00',
-          endTime: '19:00',
-          breakTime: '01:00',
+          startTime: '',
+          endTime: '',
+          breakTime: '',
           memo: ''
         },
         kintaiData: [],
@@ -110,6 +110,18 @@
           'font-size': '1.5em'
         }
       };
+    },
+    mounted() {
+      this.formClear();
+    },
+    methods: {
+      async formClear() {
+        await this.$store.dispatch('get_setting');
+        let userSetting = this.$store.state.userSetting;
+        this.form.startTime = userSetting.startTime ? userSetting.startTime : '09:00';
+        this.form.endTime = userSetting.endTime ? userSetting.endTime : '17:30';
+        this.form.breakTime = userSetting.breakTime ? userSetting.breakTime : '01:00';
+      }
     }
   }
 </script>

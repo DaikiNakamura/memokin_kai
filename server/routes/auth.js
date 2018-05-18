@@ -9,7 +9,7 @@ router.post('/register', function (req, res) {
   let userPass = req.body.password;
 
   if(users[userName]) {
-    res.status(409).json({ error: 'Conflict' });
+    return res.status(409).json({ error: 'Conflict' });
   }
 
   users[userName] = {
@@ -24,7 +24,7 @@ router.post('/login', function (req, res) {
   let userPass = req.body.password;
 
   if(!users[userName] || users[userName].password !== userPass) {
-    res.status(401).json({ error: 'Bad credentials' });
+    return res.status(401).json({ error: 'Bad credentials' });
   }
 
   req.session.authUser = { username: userName };

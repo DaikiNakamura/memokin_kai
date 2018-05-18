@@ -35,7 +35,6 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-setting" @click="save">Save</el-button>
-            <el-button type="danger" icon="el-icon-delete">DELETE (ALL DATA)</el-button>
           </el-form-item>
         </el-form>
       </div>
