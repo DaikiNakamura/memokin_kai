@@ -1,7 +1,9 @@
 let express = require('express');
 let router = express.Router();
+const jconv = require( 'jconv' );
 const Moment = require('moment');
 Moment.locale('ja');
+
 
 
 // DBじゃないけど
@@ -25,6 +27,38 @@ router.get('/:yyyyMm', function (req, res) {
 
   let targetKintai = kintai[username][yyyyMm];
   return res.json({data: targetKintai});
+});
+
+router.get('/csv/:yyyyMm', function (req, res) {
+  if(!req.session.authUser) {
+    return res.status(401).json({ error: 'Bad credentials' });
+  }
+  let username = req.session.authUser.username;
+  let yyyyMm = req.params.yyyyMm;
+
+  // no data
+  let data = [];
+  if(kintai[username] && kintai[username][yyyyMm]) {
+    data = kintai[username][yyyyMm];
+  }
+
+  // download
+  const filename = 'work_report_' + yyyyMm;
+  res.setHeader( 'Content-disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent( filename + '.csv' ) );
+  res.setHeader( 'Content-Type', 'text/csv; charset=Shift_JIS' );
+
+  let str = '';
+  for (let i = 0; i < data.length; i++) {
+    str += data[i].date + ',';
+    str += data[i].startTime + ',';
+    str += data[i].endTime + ',';
+    str += data[i].breakTime + ',';
+    str += data[i].memo;
+    str += '\r\n';
+  }
+
+  res.write( jconv.convert( str, 'UTF8', 'SJIS' ) );
+  res.end();
 });
 
 router.post('/add', function (req, res) {

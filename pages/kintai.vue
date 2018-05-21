@@ -85,6 +85,7 @@
         <el-form ref="form" :model="form" label-width="0px" size="mini">
           <el-form-item>
             <el-button type="primary" icon="el-icon-message">SHIP!!!</el-button>
+            <el-button type="primary" icon="el-icon-download" @click="exportCsv">EXPORT CSV</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -180,6 +181,10 @@
         this.form.endTime = row.endTime;
         this.form.breakTime = row.breakTime;
         this.form.memo = row.memo;
+      },
+      exportCsv() {
+        let yyyyMm = new Moment(this.form.date).format('YYYYMM');
+        location.href = '/api/kintai/csv/' + yyyyMm;
       },
       dateFormatter(row, column) {
         return new Moment(row.date, 'YYYYMMDD').format('YYYY-MM-DD (dd)');

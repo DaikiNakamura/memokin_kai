@@ -66,7 +66,7 @@
     display: inline-block;
     width: 50px;
     height: 50px;
-    background-image: url("/img/setting.png");
+    background-image: url("/img/login.png");
     background-size: contain;
   }
 
