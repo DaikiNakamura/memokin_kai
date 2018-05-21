@@ -38,7 +38,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-check" @click="addWorkTime">ADD</el-button>
-            <el-button type="warning" icon="el-icon-star-off">HOLIDAY</el-button>
+            <el-button type="warning" icon="el-icon-star-off" @click="addHoliday">HOLIDAY</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -51,12 +51,14 @@
           border
           :header-cell-style="table_header_style"
           :default-sort="{prop: 'date', order: 'ascending'}"
+          @row-click="rowClick"
+          :row-style="rowStyle"
           style="width: 100%">
           <el-table-column
             prop="date"
             label="ヒヅケ"
             :formatter="dateFormatter"
-            width="120">
+            width="140">
           </el-table-column>
           <el-table-column
             prop="startTime"
@@ -76,7 +78,7 @@
           <el-table-column
             prop="memo"
             label="メモ"
-            width="369">
+            width="349">
           </el-table-column>
         </el-table>
         <br/>
@@ -163,8 +165,33 @@
           memo: this.form.memo
         });
       },
+      async addHoliday() {
+        await this.$store.dispatch('add_kintai', {
+          date: new Moment(this.form.date).format('YYYYMMDD'),
+          startTime: '',
+          endTime: '',
+          breakTime: '',
+          memo: '全休'
+        });
+      },
+      async rowClick(row, event, column) {
+        this.form.date = new Moment(row.date, 'YYYYMMDD').toDate();
+        this.form.startTime = row.startTime;
+        this.form.endTime = row.endTime;
+        this.form.breakTime = row.breakTime;
+        this.form.memo = row.memo;
+      },
       dateFormatter(row, column) {
-        return new Moment(row.date, 'YYYYMMDD').format('YYYY-MM-DD');
+        return new Moment(row.date, 'YYYYMMDD').format('YYYY-MM-DD (dd)');
+      },
+      rowStyle({row, rowIndex}) {
+        let weekDay = new Moment(row.date, 'YYYYMMDD').format('d');
+        if(weekDay === '0' || weekDay === '6') {
+          return {
+            'color': '#F00'
+          }
+        }
+        return {}
       }
     }
   }

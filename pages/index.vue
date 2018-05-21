@@ -15,7 +15,7 @@
         <el-alert type="error" title="Error" v-if="errorMessage">
           {{ errorMessage }}
         </el-alert>
-        <el-form ref="form" label-width="90px" size="mini">
+        <el-form ref="form" size="mini">
           <el-form-item>
             <el-button type="success" icon="el-icon-check" @click="addWorkTime_start">イマキタ！</el-button>
             <el-button type="info" icon="el-icon-close" @click="addWorkTime_end">モウ、カエル！</el-button>
